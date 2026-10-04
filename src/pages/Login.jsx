@@ -82,7 +82,7 @@ const Login = () => {
                   </div>
                 </div>
                 
-                <div className="mb-5">
+                <div className="mb-3">
                   <label className="form-label fw-bold text-secondary">Password</label>
                   <div className="input-group input-group-lg">
                     <span className="input-group-text bg-light border-end-0"><Lock size={20} className="text-muted"/></span>
@@ -96,6 +96,11 @@ const Login = () => {
                       required 
                     />
                   </div>
+                </div>
+
+                {/* FORGOT PASSWORD LINK YAHAN ADD KIYA HAI */}
+                <div className="text-end mb-4">
+                    <Link to="/forgot-password" className="text-primary text-decoration-none small fw-bold">Forgot Password?</Link>
                 </div>
                 
                 <button 
