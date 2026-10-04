@@ -66,6 +66,8 @@ const Register = () => {
                 <select name="role" className="form-select form-select-lg" value={formData.role} onChange={handleChange}>
                   <option value="STUDENT">Student (Looking for Jobs/Internships)</option>
                   <option value="COMPANY">Company (Hiring Candidates)</option>
+                  {/* ADMIN KA OPTION YAHAN ADD KIYA HAI */}
+                  <option value="ADMIN">Admin (System Administrator)</option>
                 </select>
               </div>
               <button type="submit" className="btn btn-primary btn-lg w-100 fw-bold">Register Now</button>

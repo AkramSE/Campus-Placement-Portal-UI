@@ -44,9 +44,17 @@ const Navbar = () => {
               <Link className="nav-link fw-semibold" to="/">Home</Link>
             </li>
             {user && (
-              <li className="nav-item">
-                <Link className="nav-link fw-semibold text-info" to="/dashboard">Dashboard</Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link fw-semibold text-info" to="/dashboard">Dashboard</Link>
+                </li>
+                {/* ADMIN LINK - SIRF ADMIN KO DIKHEGA */}
+                {user.role === 'ADMIN' && (
+                  <li className="nav-item">
+                    <Link className="nav-link fw-bold text-danger" to="/admin">Admin Panel</Link>
+                  </li>
+                )}
+              </>
             )}
           </ul>
           

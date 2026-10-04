@@ -11,6 +11,8 @@ import ForgotPassword from './pages/ForgotPassword';
 
 // NAYA IMPORT: Profile page yahan add kiya hai
 import Profile from './pages/Profile';
+// NAYA IMPORT: Admin Dashboard yahan add kiya hai
+import AdminDashboard from './pages/AdminDashboard';
 
 // ==========================================
 // ENTERPRISE SECURITY: Global Axios Interceptor
@@ -44,6 +46,9 @@ function App() {
         
         {/* PROFILE PAGE ROUTE YAHAN ADD KIYA HAI */}
         <Route path="/profile" element={<Profile />} />
+
+        {/* ADMIN DASHBOARD ROUTE YAHAN ADD KIYA HAI */}
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );

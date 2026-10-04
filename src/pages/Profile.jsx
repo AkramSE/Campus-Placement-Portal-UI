@@ -12,7 +12,6 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  // Jab page load ho toh LocalStorage se user ka data nikal kar form mein dikhaye
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
@@ -25,7 +24,6 @@ const Profile = () => {
     }
   }, []);
 
-  // Tasweer ko Base64 (Text) mein convert karne ka function
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -37,17 +35,17 @@ const Profile = () => {
     }
   };
 
-  // Backend ko naya data bhejne ka function
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, profileImage: '' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await axios.put(`http://localhost:8080/api/users/update/${user.id}`, formData);
-      
-      // Update hone ke baad naya data LocalStorage mein save karein
       localStorage.setItem('user', JSON.stringify(response.data));
       setUser(response.data);
-      
       Swal.fire({ icon: 'success', title: 'Profile Updated!', text: 'Your details have been saved successfully.', confirmButtonColor: '#10b981' });
     } catch (error) {
       Swal.fire({ icon: 'error', title: 'Update Failed', text: 'Could not update profile. Try again.', confirmButtonColor: '#dc2626' });
@@ -69,21 +67,36 @@ const Profile = () => {
             <div className="card-body p-5">
               <form onSubmit={handleSubmit}>
                 
-                {/* Profile Picture Upload Section */}
+                {/* Profile Picture Section */}
                 <div className="text-center mb-4">
                   <div className="position-relative d-inline-block">
                     {formData.profileImage ? (
-                      <img src={formData.profileImage} alt="Profile" className="rounded-circle border border-3 border-primary object-fit-cover" style={{ width: '120px', height: '120px' }} />
+                      <img src={formData.profileImage} alt="Profile" className="rounded-circle border border-3 border-primary object-fit-cover shadow-sm" style={{ width: '120px', height: '120px' }} />
                     ) : (
-                      <div className="bg-light rounded-circle d-flex align-items-center justify-content-center border border-3 border-secondary" style={{ width: '120px', height: '120px' }}>
+                      <div className="bg-light rounded-circle d-flex align-items-center justify-content-center border border-3 border-secondary shadow-sm" style={{ width: '120px', height: '120px' }}>
                         <Camera size={40} className="text-muted" />
                       </div>
                     )}
+                    
                     <input type="file" id="imageUpload" className="d-none" accept="image/*" onChange={handleImageUpload} />
                     <label htmlFor="imageUpload" className="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle p-2 shadow" style={{ cursor: 'pointer' }}>
                       <Camera size={16} />
                     </label>
                   </div>
+
+                  {/* Professional Remove Photo Text Link */}
+                  {formData.profileImage && (
+                    <div className="mt-2">
+                      <button 
+                        type="button" 
+                        onClick={handleRemoveImage} 
+                        className="btn btn-link text-danger text-decoration-none fw-semibold p-0" 
+                        style={{ fontSize: '0.85rem' }}
+                      >
+                        Remove Photo
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Name Input */}

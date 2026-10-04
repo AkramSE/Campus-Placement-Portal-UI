@@ -72,7 +72,7 @@ const Dashboard = () => {
     try {
       const dataToPost = { ...jobData, companyName: user.name, company_name: user.name };
       await axios.post("http://localhost:8080/api/jobs/post", dataToPost);
-      Swal.fire({ icon: 'success', title: 'Successfully Published!', confirmButtonColor: '#2563eb' });
+      Swal.fire({ icon: 'success', title: 'Successfully Published!', confirmButtonColor: '#0d6efd' });
       setJobData({ ...jobData, title: '', description: '', deadline: '', jobType: 'Full-Time Job' });
       fetchJobs(); 
     } catch (error) {
@@ -141,7 +141,6 @@ const Dashboard = () => {
       }
     });
   }; 
-
   const handleUpdateStatus = async (id, newStatus) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -169,9 +168,17 @@ const Dashboard = () => {
     return 'badge bg-warning text-dark px-3 py-2 rounded-pill';
   };
 
+  // NAYA LOGIC: Job Expire Check
+  const isJobExpired = (deadlineString) => {
+    if (!deadlineString) return false;
+    const deadlineDate = new Date(deadlineString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+    return deadlineDate < today;
+  };
+
   if (!user) return <Navigate to="/login" />;
 
-  // Real-time Job Filtering logic
   const filteredJobs = jobs.filter(job => {
     const jobTitle = job.title?.toLowerCase() || '';
     const jobCompany = job.companyName?.toLowerCase() || job.company_name?.toLowerCase() || '';
@@ -180,24 +187,40 @@ const Dashboard = () => {
     return matchesSearch && matchesType;
   });
 
-  // FIX: Active Postings Count Logic Fixed
   const myPostedJobsCount = jobs.filter(j => j.companyName === user.name || j.company_name === user.name).length;
   const totalAppsCount = applications.length;
   const totalHiredCount = applications.filter(app => app.status === 'ACCEPTED').length;
 
   return (
     <div className="container mt-5 mb-5 pb-5">
-      {/* PAGE HEADER */}
-      <div className="row mb-4 justify-content-center">
-        <div className="col-md-10 text-center bg-white p-5 rounded-4 shadow-sm border">
-          <h2 className="fw-bolder display-6 text-dark mb-3">
-            {user.role === 'COMPANY' ? '🏢 Corporate HR Dashboard' : '🎓 Student Career Portal'}
-          </h2>
-          <p className="text-secondary fs-5 mb-0">
-            {user.role === 'COMPANY' 
-              ? 'Manage your job postings, track applicants, and hire top talent seamlessly.' 
-              : 'Discover premium internships and full-time roles tailored for you.'}
-          </p>
+      
+      {/* ENTERPRISE HERO SECTION */}
+      <div className="row mb-5 justify-content-center">
+        <div className="col-md-11">
+          <div 
+            className="p-5 rounded-4 shadow-sm text-center" 
+            style={{ 
+              background: 'linear-gradient(135deg, #0A2540 0%, #1A365D 100%)', 
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%)',
+              pointerEvents: 'none'
+            }}></div>
+
+            <h2 className="fw-bolder display-5 text-white mb-3 position-relative z-1">
+              {user.role === 'COMPANY' ? '🏢 Corporate HR Dashboard' : '🎓 Student Career Portal'}
+            </h2>
+            <p className="fs-5 mb-0 position-relative z-1" style={{ color: '#94a3b8' }}>
+              {user.role === 'COMPANY' 
+                ? 'Manage your job postings, track applicants, and hire top talent seamlessly.' 
+                : 'Discover premium internships and full-time roles tailored for you.'}
+            </p>
+          </div>
         </div>
       </div> 
       <div className="row justify-content-center">
@@ -205,7 +228,6 @@ const Dashboard = () => {
         {/* COMPANY DASHBOARD SECTION */}
         {user.role === 'COMPANY' && (
           <>
-            {/* HR Analytics Widgets - RESTORED TO PREMIUM UI */}
             <div className="col-lg-12 mb-5">
               <div className="row g-4">
                 <div className="col-md-4">
@@ -243,15 +265,14 @@ const Dashboard = () => {
                 </div>
               </div>
             </div> 
-            {/* ATS TABLE */}
             <div className="col-lg-12 mb-5">
-              <div className="card shadow-lg border-0 rounded-4 overflow-hidden">
-                <div className="card-header bg-dark text-white p-4 d-flex justify-content-between align-items-center">
+              <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div className="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center">
                   <h4 className="mb-0 fw-bold d-flex align-items-center">
                     <Users className="me-2" /> Applicant Tracking System (ATS)
                   </h4>
                 </div>
-                <div className="card-body p-0 bg-white">
+                <div className="card-body p-0 bg-white border border-top-0 rounded-bottom-4">
                   {applications.length === 0 ? (
                     <div className="text-center p-5 text-muted">
                       <Users size={40} className="mb-3 opacity-50" />
@@ -311,13 +332,12 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* POST JOB FORM */}
             <div className="col-lg-8 mb-5">
-              <div className="card shadow-sm border-0 rounded-4">
+              <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
                 <div className="card-header bg-primary text-white p-3">
                   <h5 className="mb-0 fw-bold"><Briefcase className="me-2" size={20} /> Post New Job</h5>
                 </div>
-                <div className="card-body p-4 bg-white">
+                <div className="card-body p-4 bg-white border border-top-0 rounded-bottom-4">
                   <form onSubmit={handlePostJob}>
                     <div className="row g-3">
                       <div className="col-md-6">
@@ -349,16 +369,17 @@ const Dashboard = () => {
             </div>
           </>
         )} 
+
         {/* STUDENT DASHBOARD SECTION (My Applications) */}
         {user.role === 'STUDENT' && myAppliedJobs.length > 0 && (
           <div className="col-lg-12 mb-5">
-             <div className="card shadow-lg border-0 rounded-4 overflow-hidden">
+             <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
                 <div className="card-header bg-primary text-white p-4">
                   <h4 className="mb-0 fw-bold d-flex align-items-center">
                     <FileText className="me-2" /> My Applications Status
                   </h4>
                 </div>
-                <div className="card-body p-0 bg-white">
+                <div className="card-body p-0 bg-white border border-top-0 rounded-bottom-4">
                   <div className="table-responsive">
                     <table className="table table-hover align-middle mb-0">
                       <thead className="table-light">
@@ -377,7 +398,7 @@ const Dashboard = () => {
                               <Building2 size={16} className="me-1"/> {app.companyName || app.company_name}
                             </td>
                             <td className="px-4 py-3">
-                              <a href={app.resumeLink} target="_blank" rel="noopener noreferrer" className="text-primary text-decoration-none">
+                              <a href={app.resumeLink} target="_blank" rel="noopener noreferrer" className="text-primary text-decoration-none fw-semibold">
                                 View Submitted Resume
                               </a>
                             </td>
@@ -395,7 +416,6 @@ const Dashboard = () => {
              </div>
           </div>
         )} 
-        {/* ALL AVAILABLE JOBS LIST - RESTORED TO PREMIUM UI (Third Pic Design) */}
         <div className="col-12 mt-2">
           <div className="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
             <h3 className="fw-bolder mb-0 text-dark">
@@ -404,7 +424,6 @@ const Dashboard = () => {
             <span className="badge bg-primary fs-6 rounded-pill px-3 py-2">{filteredJobs.length} Available</span>
           </div>
 
-          {/* Smart Search & Filter Bar */}
           <div className="row mb-5 bg-white p-3 rounded-4 shadow-sm border mx-0">
             <div className="col-md-7 mb-3 mb-md-0">
               <div className="input-group input-group-lg">
@@ -442,9 +461,11 @@ const Dashboard = () => {
                 <h4 className="text-secondary fw-bold">No jobs match your search criteria.</h4>
               </div>
             ) : (
-              filteredJobs.map((job, index) => (
+              filteredJobs.map((job, index) => {
+                const isExpired = isJobExpired(job.deadline); // CHECK EXPIRY
+                return (
                 <div className="col-xl-4 col-lg-6" key={index}>
-                  <div className="card h-100 border-0 shadow-sm premium-card rounded-4 position-relative">
+                  <div className={`card h-100 border-0 shadow-sm premium-card rounded-4 position-relative ${isExpired ? 'opacity-75' : ''}`}>
                     <div className="card-body p-4">
                       
                       {user.role === 'COMPANY' && (job.companyName === user.name || job.company_name === user.name) && (
@@ -461,10 +482,17 @@ const Dashboard = () => {
                       )}
 
                       <div className="d-flex justify-content-between align-items-start mb-3">
-                        <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold d-flex align-items-center">
-                          <span className="spinner-grow spinner-grow-sm me-2 text-success" role="status" aria-hidden="true" style={{width: '0.5rem', height: '0.5rem'}}></span>
-                          Active
-                        </span>
+                        {/* CONDITIONAL BADGE RENDER */}
+                        {isExpired ? (
+                            <span className="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 fw-bold d-flex align-items-center">
+                              <XCircle size={14} className="me-1" /> Closed
+                            </span>
+                          ) : (
+                            <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold d-flex align-items-center">
+                              <span className="spinner-grow spinner-grow-sm me-2 text-success" role="status" aria-hidden="true" style={{width: '0.5rem', height: '0.5rem'}}></span>
+                              Active
+                            </span>
+                          )}
                         <span className="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold">{job.jobType || 'General'}</span>
                       </div>
                       <h4 className="card-title fw-bolder text-dark mb-1 pe-4">{job.title}</h4>
@@ -479,14 +507,21 @@ const Dashboard = () => {
                     </div>
                     {user.role === 'STUDENT' && (
                       <div className="card-footer bg-white border-top-0 pt-0 pb-4 px-4">
-                        <button onClick={() => handleApply(job)} className="btn btn-primary w-100 fw-bold btn-lg rounded-pill shadow-sm apply-btn">
-                          Apply Now
-                        </button>
+                        {/* CONDITIONAL BUTTON RENDER */}
+                        {isExpired ? (
+                            <button disabled className="btn btn-secondary w-100 fw-bold btn-lg rounded-pill shadow-none" style={{ cursor: 'not-allowed' }}>
+                              Applications Closed
+                            </button>
+                          ) : (
+                            <button onClick={() => handleApply(job)} className="btn btn-primary w-100 fw-bold btn-lg rounded-pill shadow-sm apply-btn">
+                              Apply Now
+                            </button>
+                          )}
                       </div>
                     )}
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         </div>
