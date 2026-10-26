@@ -24,10 +24,14 @@ const Login = () => {
     try {
       const response = await axios.post("http://localhost:8080/api/users/login", loginData);
       
-      // JWT aur User Data ko alag alag save karna
-      localStorage.setItem('token', response.data.token); // Token save kiya
-      localStorage.setItem('user', JSON.stringify(response.data.user)); // User ki details save ki
+      // JWT, User Data aur Role ko safely save karna
+      localStorage.setItem('token', response.data.token); 
+      localStorage.setItem('user', JSON.stringify(response.data.user)); 
       
+      // Backend se aane wale role ko detect karna (response.data.role ya response.data.user.role)
+      const userRole = response.data.role || response.data.user?.role;
+      localStorage.setItem('role', userRole);
+
       Swal.fire({
         icon: 'success',
         title: 'Authentication Successful',
@@ -36,7 +40,12 @@ const Login = () => {
         timer: 1500,
         showConfirmButton: false
       }).then(() => {
-        window.location.href = '/dashboard'; // Direct dashboard par bhejna
+        // ROLE-BASED REDIRECT LOGIC
+        if (userRole === 'ADMIN') {
+          window.location.href = '/admin'; // Admin seedha System Administration par jaye ga
+        } else {
+          window.location.href = '/dashboard'; // Student ya Company apne dashboard par jayein ge
+        }
       });
       
     } catch (error) {

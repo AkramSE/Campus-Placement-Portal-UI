@@ -61,7 +61,7 @@ const Navbar = () => {
           <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
             {user ? (
               <>
-                {/* MODERN PROFILE SECTION - YEH PURA HISSA CLICKABLE HAI */}
+                {/* MODERN PROFILE SECTION */}
                 <Link 
                   to="/profile" 
                   className="text-decoration-none d-flex align-items-center px-3 py-1 rounded-pill" 
@@ -87,7 +87,7 @@ const Navbar = () => {
                   <span className="badge bg-info text-dark rounded-pill" style={{ fontSize: '0.7rem', padding: '0.35em 0.65em' }}>{user.role}</span>
                 </Link>
                 
-                {/* LOGOUT BUTTON - ORIGINAL DESIGN WAPAS RAKHA HAI */}
+                {/* LOGOUT BUTTON */}
                 <button onClick={handleLogout} className="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-bold d-flex align-items-center transition-all">
                   <LogOut size={16} className="me-2" /> Logout
                 </button>
